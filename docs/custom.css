@@ -1,0 +1,19 @@
+/* Fix for inline math baseline alignment */
+.math, mjx-container {
+    display: inline-block;
+    vertical-align: baseline;
+}
+
+/* Specific fix for MathJax 3 inline alignment */
+mjx-container[jax="CHTML"][display="true"] {
+    margin: 1em 0 !important;
+}
+
+mjx-container:not([display="true"]) {
+    vertical-align: -0.125em; /* Adjust this value (e.g., -0.1em to -0.2em) to center precisely */
+}
+
+/* Ensure math in tables (like your benchmark results) stays centered */
+td mjx-container {
+    vertical-align: middle;
+}

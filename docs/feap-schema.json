@@ -1,0 +1,1036 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InputModel",
+  "type": "object",
+  "required": [
+    "elements",
+    "materials",
+    "nodes"
+  ],
+  "properties": {
+    "boundary_conditions": {
+      "description": "Optional boundary conditions: ID = [Ux, Uy, Uz, Rx, Ry, Rz]",
+      "default": null,
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "boolean"
+        }
+      }
+    },
+    "combinations": {
+      "description": "List of load combinations (linear or non-linear)",
+      "default": null,
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/InputCombinedLoadCase"
+      }
+    },
+    "config": {
+      "description": "Global configuration",
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/InputConfig"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "elements": {
+      "description": "Element definitions",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/InputElement"
+      }
+    },
+    "load_cases": {
+      "description": "List of primary load cases. Defines external loads like Nodal Forces, Distributed Loads, Temperature, and Self-Weight.",
+      "default": null,
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/InputLoadCase"
+      }
+    },
+    "materials": {
+      "description": "Material properties (ID -> Material). Available types: [LinearElastic]",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/InputMaterial"
+      }
+    },
+    "nodes": {
+      "description": "Node coordinates: [X, Y] or [X, Y, Z]",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "output": {
+      "description": "Output settings",
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OutputConfig"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sections": {
+      "description": "Cross-section library",
+      "default": null,
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "$ref": "#/definitions/CrossSection"
+      }
+    }
+  },
+  "definitions": {
+    "CrossSection": {
+      "oneOf": [
+        {
+          "description": "Solid Rectangular section",
+          "type": "object",
+          "required": [
+            "height",
+            "type",
+            "width"
+          ],
+          "properties": {
+            "height": {
+              "type": "number",
+              "format": "double"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Rectangle"
+              ]
+            },
+            "width": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        },
+        {
+          "description": "Solid Circular section",
+          "type": "object",
+          "required": [
+            "radius",
+            "type"
+          ],
+          "properties": {
+            "radius": {
+              "type": "number",
+              "format": "double"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Circle"
+              ]
+            }
+          }
+        },
+        {
+          "description": "Hollow Circular section",
+          "type": "object",
+          "required": [
+            "radius",
+            "thickness",
+            "type"
+          ],
+          "properties": {
+            "radius": {
+              "type": "number",
+              "format": "double"
+            },
+            "thickness": {
+              "type": "number",
+              "format": "double"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Pipe"
+              ]
+            }
+          }
+        },
+        {
+          "description": "Custom cross-section (manual properties)",
+          "type": "object",
+          "required": [
+            "area",
+            "i_y",
+            "i_z",
+            "j",
+            "type"
+          ],
+          "properties": {
+            "area": {
+              "type": "number",
+              "format": "double"
+            },
+            "i_y": {
+              "type": "number",
+              "format": "double"
+            },
+            "i_z": {
+              "type": "number",
+              "format": "double"
+            },
+            "j": {
+              "type": "number",
+              "format": "double"
+            },
+            "shear_correction_y": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "shear_correction_z": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Generic"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "DistributedLoad": {
+      "type": "object",
+      "required": [
+        "direction",
+        "distribution",
+        "projected",
+        "system"
+      ],
+      "properties": {
+        "direction": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "distribution": {
+          "$ref": "#/definitions/Distribution"
+        },
+        "is_dead_load": {
+          "default": false,
+          "type": "boolean"
+        },
+        "projected": {
+          "type": "boolean"
+        },
+        "system": {
+          "$ref": "#/definitions/LoadSystem"
+        }
+      }
+    },
+    "Distribution": {
+      "type": "object",
+      "required": [
+        "locations",
+        "values"
+      ],
+      "properties": {
+        "locations": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "InputCombinedLoadCase": {
+      "type": "object",
+      "required": [
+        "factors"
+      ],
+      "properties": {
+        "factors": {
+          "description": "List of (LoadCaseID, Factor) pairs.",
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": [
+              {
+                "type": "integer",
+                "format": "uint",
+                "minimum": 0.0
+              },
+              {
+                "type": "number",
+                "format": "double"
+              }
+            ],
+            "maxItems": 2,
+            "minItems": 2
+          }
+        },
+        "id": {
+          "description": "Optional ID for the combination.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "name": {
+          "description": "Name of the combination.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "InputConfig": {
+      "type": "object",
+      "required": [
+        "system_type"
+      ],
+      "properties": {
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nonlinear": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonlinearConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "output": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/OutputConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "solver": {
+          "$ref": "#/definitions/SolverType"
+        },
+        "symmetric_optimization": {
+          "type": "boolean"
+        },
+        "system_type": {
+          "description": "Dimension and DOF system type.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SystemType"
+            }
+          ]
+        }
+      }
+    },
+    "InputElement": {
+      "oneOf": [
+        {
+          "description": "2-node Pin-Jointed Truss",
+          "type": "object",
+          "required": [
+            "material",
+            "nodes",
+            "type"
+          ],
+          "properties": {
+            "area": {
+              "description": "Fixed Cross-sectional area",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_double"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "material": {
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0.0
+            },
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint",
+                "minimum": 0.0
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "part": {
+              "description": "Logical part ID for grouping/coloring",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint",
+              "minimum": 0.0
+            },
+            "section": {
+              "description": "Section ID from [sections]",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_uint"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Truss"
+              ]
+            }
+          }
+        },
+        {
+          "description": "2-node Timoshenko Beam (includes shear & P-Delta)",
+          "type": "object",
+          "required": [
+            "material",
+            "nodes",
+            "type"
+          ],
+          "properties": {
+            "area": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_double"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "iy": {
+              "description": "Moment of inertia about Y",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_double"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "iz": {
+              "description": "Moment of inertia about Z",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_double"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "j": {
+              "description": "Torsional constant",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_double"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "ks_y": {
+              "description": "Shear correction factor Y",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_double"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "ks_z": {
+              "description": "Shear correction factor Z",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_double"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "material": {
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0.0
+            },
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint",
+                "minimum": 0.0
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "part": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint",
+              "minimum": 0.0
+            },
+            "section": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TaperedValue_for_uint"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Beam"
+              ]
+            },
+            "up": {
+              "description": "Orientation: Up vector [x, y, z]",
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            }
+          }
+        }
+      ]
+    },
+    "InputLoadCase": {
+      "description": "Defines a load case. Can include `dead_load`, `nodal_forces`, `distributed_loads`, and `temperature_loads`.",
+      "type": "object",
+      "properties": {
+        "dead_load": {
+          "description": "Global dead load (gravity vector) Global dead load (gravity vector): [gx, gy] or [gx, gy, gz]",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "distributed_loads": {
+          "description": "Distributed loads on elements",
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/DistributedLoad"
+            }
+          }
+        },
+        "id": {
+          "description": "Optional custom ID for the load case.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "name": {
+          "description": "Name of the loadcase.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nodal_forces": {
+          "description": "Nodal forces: ID = [Fx, Fy, Fz, ... ]",
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        },
+        "temperature_loads": {
+          "description": "Thermal loads on elements",
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/TemperatureLoad"
+          }
+        }
+      }
+    },
+    "InputMaterial": {
+      "oneOf": [
+        {
+          "description": "Linear Elastic",
+          "type": "object",
+          "required": [
+            "E",
+            "nu",
+            "rho",
+            "type"
+          ],
+          "properties": {
+            "E": {
+              "description": "Young's Modulus (Elasticity)",
+              "type": "number",
+              "format": "double"
+            },
+            "alpha": {
+              "description": "Thermal Expansion Coefficient",
+              "default": 0.0,
+              "type": "number",
+              "format": "double"
+            },
+            "name": {
+              "description": "Human-readable name (Default: \"Material ID\")",
+              "default": "",
+              "type": "string"
+            },
+            "nu": {
+              "description": "Poisson's Ratio",
+              "type": "number",
+              "format": "double"
+            },
+            "rho": {
+              "description": "Density (Mass per unit volume)",
+              "type": "number",
+              "format": "double"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "LinearElastic"
+              ]
+            }
+          }
+        },
+        {
+          "description": "Elasto-Plastic (Phase 10.35)",
+          "type": "object",
+          "required": [
+            "E",
+            "nu",
+            "rho",
+            "tangent_modulus",
+            "type",
+            "yield_strength"
+          ],
+          "properties": {
+            "E": {
+              "description": "Young's Modulus (Elasticity)",
+              "type": "number",
+              "format": "double"
+            },
+            "alpha": {
+              "description": "Thermal Expansion Coefficient",
+              "default": 0.0,
+              "type": "number",
+              "format": "double"
+            },
+            "name": {
+              "description": "Human-readable name (Default: \"Material ID\")",
+              "default": "",
+              "type": "string"
+            },
+            "nu": {
+              "description": "Poisson's Ratio",
+              "type": "number",
+              "format": "double"
+            },
+            "rho": {
+              "description": "Density (Mass per unit volume)",
+              "type": "number",
+              "format": "double"
+            },
+            "tangent_modulus": {
+              "description": "Tangent Modulus (Post-yield hardening)",
+              "type": "number",
+              "format": "double"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "ElastoPlastic"
+              ]
+            },
+            "yield_strength": {
+              "description": "Yield Strength",
+              "type": "number",
+              "format": "double"
+            }
+          }
+        }
+      ]
+    },
+    "KinematicFormulation": {
+      "description": "Global kinematic formulation for non-linear analysis",
+      "oneOf": [
+        {
+          "description": "Total Lagrange Formulation (TLF): All variables referred to initial configuration. Good for large rotations but small strains.",
+          "type": "string",
+          "enum": [
+            "TLF"
+          ]
+        },
+        {
+          "description": "Updated Lagrange Formulation (ULF): All variables referred to current configuration. Required for large strains and continuous coordinate updates.",
+          "type": "string",
+          "enum": [
+            "ULF"
+          ]
+        }
+      ]
+    },
+    "LoadSystem": {
+      "type": "string",
+      "enum": [
+        "Global",
+        "Local"
+      ]
+    },
+    "NonlinearConfig": {
+      "description": "Nonlinear solver parameters",
+      "type": "object",
+      "properties": {
+        "displacement_tolerance": {
+          "default": 1e-6,
+          "type": "number",
+          "format": "double"
+        },
+        "energy_tolerance": {
+          "default": 1e-8,
+          "type": "number",
+          "format": "double"
+        },
+        "force_tolerance": {
+          "default": 1e-6,
+          "type": "number",
+          "format": "double"
+        },
+        "formulation": {
+          "$ref": "#/definitions/KinematicFormulation"
+        },
+        "load_steps": {
+          "default": 1,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "max_iterations": {
+          "default": 50,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "OutputConfig": {
+      "type": "object",
+      "properties": {
+        "displacements": {
+          "description": "Nodes to include in displacement output.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OutputSelection"
+            }
+          ]
+        },
+        "echo_geometry": {
+          "description": "Whether to echo node and element geometry.",
+          "type": "boolean"
+        },
+        "echo_input": {
+          "description": "Whether to echo the input file in output.",
+          "type": "boolean"
+        },
+        "filename": {
+          "description": "Optional custom base filename for output files.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "forces": {
+          "description": "Elements to include in internal force output.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OutputSelection"
+            }
+          ]
+        },
+        "precision": {
+          "description": "Floating point precision (decimal places).",
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "reactions": {
+          "description": "Nodes to include in reaction force output.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OutputSelection"
+            }
+          ]
+        }
+      }
+    },
+    "OutputSelection": {
+      "anyOf": [
+        {
+          "description": "\"ALL\", \"NONE\", or range like \"1..100\"",
+          "type": "string"
+        },
+        {
+          "description": "Explicit list of IDs",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0.0
+          }
+        }
+      ]
+    },
+    "SolverType": {
+      "description": "Available linear solver backends",
+      "oneOf": [
+        {
+          "description": "Dense: Dense Matrix solver (LU decomposition). Good for very small problems (<1000 DOFs).",
+          "type": "string",
+          "enum": [
+            "Dense"
+          ]
+        },
+        {
+          "description": "Skyline: Skyline solver (active column). Memory efficient for medium 1D/2D problems.",
+          "type": "string",
+          "enum": [
+            "Skyline"
+          ]
+        },
+        {
+          "description": "Frontal: Frontal solver. Best for long, narrow structures.",
+          "type": "string",
+          "enum": [
+            "Frontal"
+          ]
+        },
+        {
+          "description": "Pardiso: Intel oneAPI MKL Pardiso. High-performance sparse direct solver.",
+          "type": "string",
+          "enum": [
+            "Pardiso"
+          ]
+        },
+        {
+          "description": "SuiteSparse: KLU/UMFPACK from SuiteSparse.",
+          "type": "string",
+          "enum": [
+            "SuiteSparse"
+          ]
+        }
+      ]
+    },
+    "SystemType": {
+      "oneOf": [
+        {
+          "description": "General3D: 3D structural system (nodes have 6 DOFs)",
+          "type": "string",
+          "enum": [
+            "General3D"
+          ]
+        },
+        {
+          "description": "PlaneStress: 2D Plane stress system",
+          "type": "string",
+          "enum": [
+            "PlaneStress"
+          ]
+        },
+        {
+          "description": "PlaneStrain: 2D Plane strain system",
+          "type": "string",
+          "enum": [
+            "PlaneStrain"
+          ]
+        },
+        {
+          "description": "Truss2D: 2D Pin-jointed truss system",
+          "type": "string",
+          "enum": [
+            "Truss2D"
+          ]
+        },
+        {
+          "description": "Truss3D: 3D Pin-jointed truss system",
+          "type": "string",
+          "enum": [
+            "Truss3D"
+          ]
+        },
+        {
+          "description": "Frame2D: 2D Beam/Frame system",
+          "type": "string",
+          "enum": [
+            "Frame2D"
+          ]
+        },
+        {
+          "description": "Grid2D: 2D Flat grid system (bending about X/Y)",
+          "type": "string",
+          "enum": [
+            "Grid2D"
+          ]
+        }
+      ]
+    },
+    "TaperedValue_for_double": {
+      "anyOf": [
+        {
+          "type": "number",
+          "format": "double"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        }
+      ]
+    },
+    "TaperedValue_for_uint": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint",
+            "minimum": 0.0
+          },
+          "maxItems": 2,
+          "minItems": 2
+        }
+      ]
+    },
+    "TemperatureLoad": {
+      "type": "object",
+      "required": [
+        "delta_t"
+      ],
+      "properties": {
+        "delta_t": {
+          "type": "number",
+          "format": "double"
+        },
+        "gradient": {
+          "default": [
+            0.0,
+            0.0
+          ],
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        }
+      }
+    }
+  }
+}

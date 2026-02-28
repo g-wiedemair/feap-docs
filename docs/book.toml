@@ -1,0 +1,9 @@
+[book]
+authors = ["FEAP Team"]
+language = "en"
+src = "src"
+title = "FEAP Documentation"
+
+[output.html]
+additional-css = ["custom.css"]
+mathjax-support = true
