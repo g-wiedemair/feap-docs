@@ -6,6 +6,7 @@ This phase focused on expanding FEAP's capability into 2D continua and refining 
 We implemented a robust foundation for 2D analysis:
 - **New Elements**: Added linear `Quad4` and quadratic `Quad8` elements with full isoparametric formulations.
 - **System Types**: Native support for `PlaneStress` (thin plates) and `PlaneStrain` (dams, tunnels, geotechnics).
+- **Edge Loads**: Implemented constant edge tractions ($q_x, q_y$) for 2D elements, enabling complex boundary pressure modeling.
 - **Physical Integration**: Full coupling with thermal expansion and elasto-plasticity.
 
 ## 2. Advanced Non-Linear Sequencer

@@ -11,13 +11,13 @@ To accurately capture large deformations and large rotations, FEAP implements tw
 
 ## 2. Iterative Procedures (Newton-Raphson)
 
-To solve non-linear systems, FEAP primarily employs the **Newton-Raphson** iterative method [4]. Because the global tangential stiffness matrix \\( K_T \\) depends on the current deformation and stress state, the external load must be applied incrementally.
+To solve non-linear systems, FEAP primarily employs the **Newton-Raphson** iterative method [4]. Because the global tangential stiffness matrix $ K_T $ depends on the current deformation and stress state, the external load must be applied incrementally.
 
-Within each load step, equilibrium between the external applied loads \\( f_{ext} \\) and the internal element forces \\( f_{int} \\) must be achieved. The solver iterates until the residual vector \\( R \\) approaches zero:
-\\[ R = f_{ext} - f_{int} = 0 \\]
+Within each load step, equilibrium between the external applied loads $ f_{ext} $ and the internal element forces $ f_{int} $ must be achieved. The solver iterates until the residual vector $ R $ approaches zero:
+$$ R = f_{ext} - f_{int} = 0 $$
 
-In each iteration, the tangential stiffness matrix \\( K_T \\) is assembled to compute the corrective displacement increments \\( \Delta u \\):
-\\[ K_T \cdot \Delta u = R \\]
+In each iteration, the tangential stiffness matrix $ K_T $ is assembled to compute the corrective displacement increments $ \Delta u $:
+$$ K_T \cdot \Delta u = R $$
 
 ## 3. State Inheritance & Construction Stages
 
@@ -39,9 +39,9 @@ Instead of requiring the user to calculate and apply manual load increments (del
 ## 5. Fiber Integration Model (3D Beams)
 
 For progressive yielding in 3D spatial beams (`SBeam`), FEAP moves beyond classical analytical cross-section properties.
-*   **Numerical Integration**: Instead of using global \\( EI \\) or \\( EA \\) values, the beam's internal forces are computed by integrating stresses over a discretized fiber grid at each longitudinal Gauss point.
+*   **Numerical Integration**: Instead of using global $ EI $ or $ EA $ values, the beam's internal forces are computed by integrating stresses over a discretized fiber grid at each longitudinal Gauss point.
 *   **Plastic Hinges**: This numerical approach accurately captures the gradual formation of plastic hinges as individual fibers exceed the yield threshold, allowing for a highly realistic representation of ultimate load ("Traglast") behavior.
-*   **Cross-Section Discretization**: Typical sections (Rectangular, Pipe, Circular) are automatically discretized into an \\( N \times M \\) grid of fibers. Each fiber acts as an independent integration point, tracking its own physical state history (active stress and plastic strain).
+*   **Cross-Section Discretization**: Typical sections (Rectangular, Pipe, Circular) are automatically discretized into an $ N \times M $ grid of fibers. Each fiber acts as an independent integration point, tracking its own physical state history (active stress and plastic strain).
 
 ## 6. Advanced Stability Solvers (Arc-Length)
 

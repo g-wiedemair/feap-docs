@@ -40,7 +40,7 @@
     - [Phase 9: Python Integration](history/walkthrough_phase9.md) | [Task List](history/task_phase9.md)
     - [Phase 10: Advanced Physics](history/walkthrough_phase10.md) | [Task List](history/task_phase10.md)
     - [Phase 11: Python API & Elasto-Plasticity](history/walkthrough_phase11.md) | [Task List](history/task_phase11.md)
-    - [Phase 12: Geotechnics & 2D Continua](history/walkthrough_phase12.md) | [Task List](history/task_phase12.md)
+    - [Phase 12: 2D Continua & Result Refinement](history/walkthrough_phase12.md) | [Task List](history/task_phase12.md)
 
 # Appendix
 - [Bibliography](reference/bibliography.md)

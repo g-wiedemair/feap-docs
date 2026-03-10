@@ -35,7 +35,7 @@ lc1.add_dead_load(0, -9.806, 0)
 ```
 
 ## Nodal Forces
-Point forces and point moments applied directly to specific nodes in the global \\( X, Y, Z \\) directions.
+Point forces and point moments applied directly to specific nodes in the global $ X, Y, Z $ directions.
 *   **Forces (fx, fy, fz):** Applicable to all element types.
 *   **Moments (mx, my, mz):** Only applicable if the node possesses rotational degrees of freedom (e.g., nodes connected to an `Beam`).
 
@@ -62,20 +62,53 @@ Loads distributed along the length of 1D structural elements.
 ### Uniform Distributed Load
 A constant force per unit length (e.g., self-weight, snow). It can be applied in the global coordinate system or the element's local system.
 
+*   **Coordinate System (`system`):** Choose between `"Global"` (default) or `"Local"`.
+*   **Projected Loads (`projected`):** If `true`, the load intensity is applied to the horizontal projection of the element. This is essential for snow loads on inclined roofs.
+
 **TOML Example**
 ```toml
 [[load_cases]]
 id = 3
-name = "Traffic"
+name = "Traffic & Snow"
 [load_cases.distributed_loads]
-# Element ID → list of load objects
-1 = [{ qy = -5000.0 }]                     # Uniform load in local y
-2 = [{ qy = -3000.0 }, { qx = 1000.0 }]    # Multiple loads on same element
+# Element 1: Uniform load in global Y (Snow on projection)
+1 = [{ qy = -2.0, projected = true }]
+
+# Element 2: Local y-axis (e.g., wind pressure)
+2 = [{ qy = -5.0, system = "Local" }]
 ```
 **Python Example**
 ```python
-lc2 = model.add_load_case(id=2, name="Snow Load")
-lc2.add_uniform_load(element_id=10, qy=-10.0)
+# Snow load on projection
+lc2.add_uniform_load(element_id=1, intensity=-2.0, direction=[0, -1, 0], projected=True)
+
+# Wind load in local y
+lc2.add_uniform_load(element_id=2, intensity=-5.0, direction=[0, 1, 0], system="Local")
+```
+
+### Trapezoidal & General Distributions
+For loads that vary along the length of an element (e.g., hydrostatic pressure), you can define custom distributions.
+
+**TOML Example**
+```toml
+[[load_cases.distributed_loads]]
+# Trapezoidal load from -5.0 at start to -10.0 at end
+10 = [{ qy = [-5.0, -10.0] }]
+
+# General distribution via interpolation points
+11 = [{ 
+    distribution = { locations = [0.0, 0.4, 1.0], values = [0.0, -10.0, -5.0] },
+    qy = 1.0 
+}]
+```
+
+**Python Example**
+```python
+# Trapezoidal: q1, q2
+lc2.add_trapezoidal_load(element_id=10, q1=-5.0, q2=-10.0, direction=[0, -1, 0])
+
+# General: locations [0..1], values
+lc2.add_distributed_load(element_id=11, locations=[0.0, 0.4, 1.0], values=[0.0, -10.0, -5.0], direction=[0, -1, 0])
 ```
 
 ### Temperature Loads
@@ -108,9 +141,25 @@ The thermal strain is: `ε_th = α · ΔT`, where `α` is the thermal expansion 
 
 ## 2D Continuum Loads (Edge Loads)
 For 2D elements (Quad4, Quad8), external pressures like earth pressure, wind, or surface surcharges must be applied to the boundaries of the mesh. FEAP handles this via Edge Loads (force per unit length).
-The engine internally integrates this continuous line load using the element's exact isoparametric shape functions \\ N_i \\ and converts it into mathematically consistent nodal force vectors. This is particularly crucial for quadratic Quad8 elements, where mid-side nodes receive a different proportion of the total force than corner nodes.
+The engine internally integrates this continuous line load using the element's exact isoparametric shape functions $ N_i $ and converts it into mathematically consistent nodal force vectors. This is particularly crucial for quadratic Quad8 elements, where mid-side nodes receive a different proportion of the total force than corner nodes.
 
-* **Application:** Instead of manually selecting specific element edges, you define a path of nodes outlining the boundary. The engine automatically detects the corresponding element faces.
+* **Path-Based Application:** Define a path of nodes outlining the boundary. The engine automatically detects the corresponding element faces.
+* **Direct Application:** Apply load directly to a specific element and edge index.
+
+**Direct Edge Load (TOML)**
+```toml
+[[load_cases.edge_loads]]
+element_id = 100
+edge_index = 2   # 0: bottom, 1: right, 2: top, 3: left
+qx = 0.0
+qy = -10.0
+```
+
+**Direct Edge Load (Python)**
+```python
+# element_id, edge_index (0-3), qx, qy
+lc3.add_edge_load(100, 2, 0.0, -10.0)
+```
 
 **TOML Example**
 ```toml
@@ -174,6 +223,9 @@ model.add_combined_load_case(4, "ULS", [(1, 1.35), (2, 1.5), (3, 1.3)])
 
 ---
 
-## Total Load Approach & Interpolation
-If a non-linear analysis inherits the converged physical state of a previous load case (via continue_from), FEAP utilizes a Total Load approach.
+## Total Load Approach & Load Inheritance
+If a non-linear analysis inherits the converged physical state of a previous load case, FEAP utilizes a **Total Load** approach. This is essential for sequentially modeling construction stages, excavation, or cyclic loading.
+
+* **TOML (`inherit_from`):** Specify the name of the parent load case.
+* **Python (`continue_from`):** Pass the previous `LoadCase` object to the new case.
 You do not define load increments (deltas). Instead, you define the absolute target load for the end of the new construction stage. The Newton-Raphson solver automatically computes the difference between the inherited external force vector and the new target, smoothly interpolating the load over the specified load_steps to ensure path-dependent numerical stability.

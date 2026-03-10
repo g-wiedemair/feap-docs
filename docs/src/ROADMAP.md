@@ -240,6 +240,7 @@ FEAP (FENDA-Rust Port) aims to be a modern, high-performance finite element anal
 ### Achievements
 - ✅ **System Upgrades**: Implementation of the `PlaneStress` and `PlaneStrain` system types with corresponding DOF masking.
 - ✅ **Isoparametric Elements**: Native implementation of `Quad4` and quadratic `Quad8` isoparametric quadrilaterals.
+- ✅ **Edge Loads**: Support for constant edge tractions (q_x, q_y) for 2D continuum elements with analytical nodal distribution.
 - ✅ **Physical State Inheritance**: Sequential solvers now transfer complete physical equilibrium (displacements, strains, stresses, plastic history).
 - ✅ **Total Load Approach**: Transitioned to an absolute target load solver with starting-force interpolation to prevent "numerical load jumps".
 - ✅ **High-Performance Results**: Switched internal GUI result caching to `bincode` for ~3x faster IO and near-instant project switching.
@@ -249,14 +250,14 @@ FEAP (FENDA-Rust Port) aims to be a modern, high-performance finite element anal
 
 ---
 
-## 🚀 Phase 13: Geotechnical Materials (Current)
-**Status: IN PROGRESS**
+## 🔮 Phase 13: Geotechnical Materials
+**Status: PLANNED**
 
 ### Objectives
-- [ ] **Mohr-Coulomb Material**: Elasto-plasticity model
-- [ ] **Drucker-Prager Material**: Elasto-plasticity model
-- [ ] **Hardening Soil Material**: Elasto-plasticity model
-- [ ] **GAP Element**: Interface/Contact element
+- [ ] **Construction Stages**: Implementation of element activation/deactivation logic in the solver and GUI.
+- [ ] **Mohr-Coulomb Material**: Elasto-plasticity model for soil and rock.
+- [ ] **Hardening Soil Material**: Advanced nonlinear soil behavior.
+- [ ] **GAP Element**: Interface/Contact element for foundation modeling.
 - [ ] **Earth Pressure Loads**: Vertical and horizontal soil pressure mapping for continuum elements.
 
 ---

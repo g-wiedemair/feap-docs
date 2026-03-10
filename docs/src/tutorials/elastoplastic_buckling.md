@@ -1,4 +1,4 @@
-# Non-Linear Elasto-Plastic Buckling and Ultimate Load Analysis
+# Tutorial 3: Non-Linear Elasto-Plastic Buckling and Ultimate Load Analysis
 
 This tutorial demonstrates how to determine the **physical collapse load** (Traglast) of a structure by combining geometric nonlinearity (P-Delta), material elasto-plasticity, and initial imperfections.
 

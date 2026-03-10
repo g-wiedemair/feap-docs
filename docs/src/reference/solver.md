@@ -1,6 +1,6 @@
 # Solvers & Numerical Methods
 
-FEAP employs a stratified solver architecture. At the top level, a robust **Newton-Raphson** algorithm handles non-linear load stepping and state inheritance. For the resulting linearized tangential systems \\( K_T \cdot \Delta u = R \\), the engine delegates the matrix factorization to highly optimized, pluggable linear solver backends.
+FEAP employs a stratified solver architecture. At the top level, a robust **Newton-Raphson** algorithm handles non-linear load stepping and state inheritance. For the resulting linearized tangential systems $ K_T \cdot \Delta u = R $, the engine delegates the matrix factorization to highly optimized, pluggable linear solver backends.
 
 ## Non-Linear Solver (Newton-Raphson)
 
@@ -8,8 +8,8 @@ The primary solver for static and construction stage analyses is the Newton-Raph
 
 ### Convergence Criteria
 The iteration process successfully terminates when the following criteria are met:
-*   **Force tolerance**: The norm of the residual vector \\( ||R|| \\) falls below a defined threshold (default: `1e-8`).
-*   **Displacement tolerance**: The norm of the corrective displacement increment \\( ||\Delta u|| \\) falls below a defined threshold (default: `1e-10`).
+*   **Force tolerance**: The norm of the residual vector $ ||R|| $ falls below a defined threshold (default: `1e-8`).
+*   **Displacement tolerance**: The norm of the corrective displacement increment $ ||\Delta u|| $ falls below a defined threshold (default: `1e-10`).
 *   **Maximum Iterations**: If convergence is not reached within the specified limit (default: `50`), the solver aborts the current step to prevent infinite loops and logs a non-convergence error.
 
 ## Linear Solver Backends
@@ -24,7 +24,7 @@ Fully integrated via the Intel oneAPI Math Kernel Library (MKL) through a fast F
 ### 2. Skyline Solver (Profile Solver)
 A highly optimized profile-storage solver implemented entirely in pure, safe Rust.
 *   **Advantage**: Zero external C/C++ dependencies. It compiles and works out of the box on any operating system.
-*   **Complexity**: Scales with \\( O(N \cdot B^2) \\), where \\( B \\) is the mean semi-bandwidth. 
+*   **Complexity**: Scales with $ O(N \cdot B^2) $, where $ B $ is the mean semi-bandwidth. 
 *   **Usage**: Highly recommended as the default for 1D/2D structural frameworks and smaller continua up to ~5,000 DOFs, as it carries zero external setup overhead.
 
 ### 3. SuiteSparse (UMFPACK)
@@ -36,8 +36,8 @@ Based on the wave-front method (historically the default in the original FENDA s
 *   **Status**: Currently implemented as a research structure for processing massive out-of-core systems. For in-core calculations on modern hardware, Pardiso is strictly superior.
 
 ### 5. Dense Solver
-Standard LU decomposition on a full \\( N \times N \\) square matrix.
-*   **Usage**: Strictly for debugging fundamental element formulations (e.g., single element tests). The \\( O(N^3) \\) complexity makes it completely unusable for systems larger than a few hundred DOFs.
+Standard LU decomposition on a full $ N \times N $ square matrix.
+*   **Usage**: Strictly for debugging fundamental element formulations (e.g., single element tests). The $ O(N^3) $ complexity makes it completely unusable for systems larger than a few hundred DOFs.
 
 ---
 

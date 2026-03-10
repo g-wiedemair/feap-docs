@@ -10,9 +10,9 @@ FEAP provides a highly optimized set of finite elements for both 1D/3D structura
 
 ### Truss (3D Link Element)
 A basic bar element that only transmits axial forces (tension and compression).
-*   **Degrees of Freedom:** 3 translational DOFs per node (\\( u_x, u_y, u_z \\)).
+*   **Degrees of Freedom:** 3 translational DOFs per node ($ u_x, u_y, u_z $).
 *   **Capabilities:** Supports large deformations (Total/Updated Lagrange) and yielding.
-*   **Supported Loads:** Nodal Forces, Uniform and Trapezoidal Distributed Loads, Dead Load (Self-weight), Temperature Gradients (\\( \Delta T \\)).
+*   **Supported Loads:** Nodal Forces, Uniform and Trapezoidal Distributed Loads, Dead Load (Self-weight), Temperature Gradients ($ \Delta T $).
 
 **TOML Example:**
 ```toml
@@ -30,7 +30,7 @@ A robust, fully 3D beam element capable of transferring bending moments, shear f
 *  **Degrees of Freedom:** 6 DOFs per node (3 translations, 3 rotations).
 * **Capabilities:** 
     * Can evaluate Euler-Bernoulli (thin beams) and Timoshenko (thick beams with shear deformation) theories.
-    * Includes Geometric Stiffness (\\ K_g \\) for explicit linear buckling and second-order (P-Delta) analysis.
+    * Includes Geometric Stiffness ($ K_g $) for explicit linear buckling and second-order (P-Delta) analysis.
     * Supports Fiber Integration for accurate elasto-plastic hinge formation.
 * **Supported Loads:** Nodal Forces/Moments, Uniform and Trapezoidal Distributed Loads, Dead Load, Thermal Gradients.
 
@@ -49,7 +49,7 @@ model.add_sbeam(id=2, nodes=[6, 7], material_id=1, section_id=2, part=1)
 To use 1D elements, you must assign a cross-section. FEAP offers two approaches: Direct Input of section properties or Parametric Shapes
 .
 
-* **Direct Input (Generic Section):** For standard steel profiles (e.g., HEA, IPE) or complex arbitrary shapes, you can directly input the exact cross-sectional area (\\ A \\), torsional constant (\\J \\), and bending moments of inertia (\\ I_y \\, \\ I_z \\).
+* **Direct Input (Generic Section):** For standard steel profiles (e.g., HEA, IPE) or complex arbitrary shapes, you can directly input the exact cross-sectional area ($ A $), torsional constant ($ J $), and bending moments of inertia ($ I_y $, $ I_z $).
 
     ```toml
     [sections]
@@ -95,7 +95,7 @@ For modeling solid plates, walls, or geotechnical soil layers, FEAP provides iso
 
 ### Quad4 (Linear Quadrilateral)
 A 4-node quadrilateral element with linear shape functions.
-* **Degrees of Freedom:** 2 translational DOFs per node (\\ u_x \\,\\ u_y \\).
+* **Degrees of Freedom:** 2 translational DOFs per node ($ u_x $, $ u_y $).
 * **Integration:** Standard 2×2 Gauss-Legendre quadrature.
 * **Capabilities:** Fast and efficient for basic plane stress/strain. Prone to shear locking in bending-dominated scenarios (requires a finer mesh).
 * **Supported Loads:** Edge Loads (distributed forces on boundaries), Dead Load, Nodal Forces.
@@ -113,7 +113,7 @@ model.add_quad4(id=100, nodes=[8-11], material_id=2, thickness=0.25, part=2)
 
 ### Quad8 (Quadratic Quadrilateral)
 An 8-node quadrilateral element featuring 4 corner nodes and 4 mid-side nodes with quadratic shape functions.
-* **Degrees of Freedom:** 2 translational DOFs per node (\\ u_x \\, \\ u_y \\).
+* **Degrees of Freedom:** 2 translational DOFs per node ($ u_x $, $ u_y $).
 * **Integration:** Exact 3×3 Gauss-Legendre quadrature.
 * **Capabilities:** Highly accurate. Eliminates shear locking naturally. Ideal for stress concentrations (e.g., holes) and complex elasto-plastic yielding.
 * **Node Ordering:** 4 corner nodes first, followed by the 4 mid-side nodes (counter-clockwise).

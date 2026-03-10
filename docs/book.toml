@@ -7,3 +7,4 @@ title = "FEAP Documentation"
 [output.html]
 additional-css = ["custom.css"]
 mathjax-support = true
+theme = "theme"

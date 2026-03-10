@@ -1,8 +1,9 @@
-# Task Phase 12: Geotechnics & 2D Continua
+# Task Phase 12: 2D Continue & Result Refinement
 
 ## Phase 12.1: Plane System Infrastructure
 - [x] Implementation of the `PlaneStress` and `PlaneStrain` system types.
 - [x] Development of the `Quad4` (linear) and `Quad8` (quadratic) isoparametric quadrilateral elements.
+- [x] Implementation of **Edge Loads** (constant tractions) for 2D boundaries.
 - [x] Integration of 2D continua into the numerical kernel and global assembly.
 
 ## Phase 12.2: Advanced Non-Linear Physics

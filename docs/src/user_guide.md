@@ -36,7 +36,7 @@ The top bar provides essential controls for your analysis session:
 The HUD overlays critical analysis information directly on the viewport, preventing the need to dig through text logs:
 
 *   Total reaction forces `[Fx, Fy, Fz]` at the supports.
-*   Buckling Mode factors \( \lambda \) (if an eigenvalue analysis was performed).
+*   Buckling Mode factors $\lambda$ (if an eigenvalue analysis was performed).
 
 ### Menu Bar & Workspaces
 

@@ -1,6 +1,6 @@
 # Material Models Reference
 
-FEAP provides a diverse library of constitutive material models to simulate both structural and geotechnical behavior. The material model defines the relationship between strains and stresses \\( \sigma = D(\epsilon) \\) and dictates how the tangential stiffness matrix \\( K_T \\) is updated during the non-linear Newton-Raphson iteration.
+FEAP provides a diverse library of constitutive material models to simulate both structural and geotechnical behavior. The material model defines the relationship between strains and stresses $ \sigma = D(\epsilon) $ and dictates how the tangential stiffness matrix $ K_T $ is updated during the non-linear Newton-Raphson iteration.
 
 Every structural and continuum element must be assigned a valid material via its `material_id`.
 
@@ -8,7 +8,7 @@ Every structural and continuum element must be assigned a valid material via its
 
 The standard model for linear-elastic, isotropic materials based on generalized Hooke's law. 
 *   **Behavior:** Stresses are strictly proportional to strains. The material fully recovers its original shape upon unloading.
-*   **Parameters:** Young's Modulus \\( E \\), Poisson's Ratio \\( \nu \\), Density \\( \rho \\), and the coefficient of thermal expansion \\( \alpha \\).
+*   **Parameters:** Young's Modulus $ E $, Poisson's Ratio $ \nu $, Density $ \rho $, and the coefficient of thermal expansion $ \alpha $.
 
 **TOML Example**
 ```toml
@@ -35,8 +35,8 @@ model.add_linear_elastic_material(
 
 ## Bilinear Elasto-Plasticity (von Mises)
 A standard non-linear model primarily used for ductile metals like steel. It utilizes the von Mises yield criterion.
-* **Behavior:** Linear elastic up to the yield strength \\( f_y \\). Upon yielding, the material undergoes plastic deformation governed by an isotropic kinematic hardening rule, defined by the tangent modulus \\( E_t \\).
-* **Parameters:** Young's Modulus \\( E \\), Poisson's Ratio \\( \v \\), Yield Strength \\( f_y \\), Tangent Modulus \\( E_t \\).
+* **Behavior:** Linear elastic up to the yield strength $ f_y $. Upon yielding, the material undergoes plastic deformation governed by an isotropic kinematic hardening rule, defined by the tangent modulus $ E_t $.
+* **Parameters:** Young's Modulus $ E $, Poisson's Ratio $ \nu $, Yield Strength $ f_y $, Tangent Modulus $ E_t $.
 
 **TOML Example**
 ```toml

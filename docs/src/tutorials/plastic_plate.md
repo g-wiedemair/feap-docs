@@ -1,4 +1,4 @@
-# Non-Linear Material Modeling (Plastic Plate with a Hole)
+# Tutorial 4: Non-Linear Material Modeling (Plastic Plate with a Hole)
 
 In this tutorial, we will utilize the non-linear features of FEAP. We will procedurally generate a mesh for a plate with a central hole using quadratic 8-node elements (`Quad8`). We will load it beyond its yield strength to induce plasticity, and subsequently define a second load case to unload it, allowing us to investigate permanent (residual) deformations. 
 
