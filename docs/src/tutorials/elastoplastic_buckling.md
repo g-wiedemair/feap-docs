@@ -43,8 +43,8 @@ for i in range(num_elements):
 model.set_bc(node_id=1, ux=True, uy=True, rz=True)
 
 # 6. Reference Load Case (Unit axial compression P = 1.0 kN)
-model.add_load_case(id=1, name="Reference Load")
-model.add_nodal_force(node_id=num_elements+1, fy=-1.0)
+lc1 = model.add_load_case(id=1, name="Reference Load")
+lc1.add_nodal_force(node_id=num_elements+1, fy=-1.0)
 
 # Solve initial state
 model.solve(load_case=1)
@@ -75,8 +75,8 @@ last_converged_load = 0
 
 print("Starting Nonlinear Analysis...")
 for P in load_steps:
-    model.add_load_case(id=2, name=f"P = {P} kN")
-    model.add_nodal_force(node_id=num_elements+1, fy=-P)
+    lc2 = model.add_load_case(id=2, name=f"P = {P} kN")
+    lc2.add_nodal_force(node_id=num_elements+1, fy=-P)
     
     try:
         # Solve with Updated Lagrange Formulation

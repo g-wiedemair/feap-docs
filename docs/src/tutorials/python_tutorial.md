@@ -1,12 +1,12 @@
-# Python Scripting in FEAP
+# Tutorial 2: Introduction to Python Scripting
 
-FEAP features a powerful, embedded Python engine. You can write Python scripts to parametrically generate complex structures, apply loads, and extract results automatically.
+FEAP provides a robust, embedded Python API via `PyO3`. This allows you to bypass the graphical interface and TOML files entirely, enabling parametric modeling, automated optimization loops, and batch processing directly from your Python environment.
 
-## 1. Setting up your IDE (VS Code)
+In this introductory tutorial, we will build a very basic linear-elastic truss structure, define a load case using the object-oriented API, and solve it.
 
-While you can type commands directly into the FEAP GUI console, writing scripts in an editor like VS Code is much more comfortable. To get **Autocompletion (IntelliSense)** and tooltips for the `feap` module, simply place the `feap.py` stub file (provided with your FEAP installation) into your working directory. 
+## 1. Setting up the Model
 
-Write your scripts normally. FEAP will execute the code directly using its high-speed Rust core.
+First, import the `feap` module and initialize an empty `Model`. You can also set basic configuration parameters like the system type and a description.
 
 ```python
 import feap
@@ -22,9 +22,6 @@ Start by defining the system type and output configuration. FEAP supports smart 
 model.set_config(system_type="Truss2D", solver="Skyline", description="My First Script")
 model.set_output(precision=4, echo_input=False)
 ```
-
-**Available system types**: `General`, `Truss2D`, `Truss3D`, `Frame2D`, `Frame3D`
-**Available solvers**: `Pardiso`, `Skyline`, `Frontal`, `Dense`
 
 ## 3. Materials and Geometry
 You can create nodes and elements using loops. Notice how we don't need to specify the Z-coordinate for 2D systems:
@@ -62,24 +59,42 @@ for i in range(n_bays + 1):
 ```
 
 ## 4. Applying Loads
+FEAP uses an object-oriented approach to manage load cases. You instantiate a load case via the model and then apply loads directly to this specific case. This makes managing multiple load scenarios extremely clean.
+
+```python
+# Create a primary load case
+lc1 = model.add_load_case(1, "Dead Load")
+# Apply a load to this specific load case
+# Enable global gravity (Y-direction)
+lc1.add_dead_load(0, -9.806, 0)
+```
+
 FEAP allows you to easily combine mechanical and thermal loads.
 
 ```python
-# Enable global gravity (Y-direction)
-model.set_dead_load(0.0, -9.81)
+lc2 = model.add_load_case(2, "Joint load")
+# Apply nodal force at midspan (fz defaults to 0.0)
+mid_node = (num_bays // 2) + 1
+lc2.add_nodal_force(mid_node, 0.0, -500.0)
 
-# Add a nodal point load at Node 3 (Fx, Fy)
-model.add_nodal_force(3, 10.0, -50.0)
-
-# Add a distributed load (traffic) to Element 1
-model.add_distributed_load(1, 0.0, -5.0)
-
-# Add a temperature increase of 30 degrees to Element 2
-model.add_temperature_load(2, 30.0)
+lc3 = model.add_load_case(3, "Temperature Load")
+lc3.add_temperature_load([1, 5, 9, 13, 17, 21], 20.0)
 ```
 
-## 5. Solving and Extracting Results
-You can trigger the Newton-Raphson solver directly from your script.
+You can also combine existing load cases.
+
+```python
+model.add_combined_load_case(4, "ULS", [(1, 1.35), (2, 1.5), (3, 1.3)])
+```
+
+## 5. Solving, Extracting Results and Saving
+Finally, you can trigger the internal Newton-Raphson solver and save the generated model to a .toml file.
+
+### Initialize Logging
+```python
+# Initialize logging to see the solver output in the console
+feap.init_logging()
+```
 
 ### Batch Mode (solve all cases)
 When called without arguments, `solve()` runs all defined load cases and combinations:
@@ -102,24 +117,33 @@ model.solve(load_case=4)   # Solve only Combination 4
 ```python
 if model.solve():
     # 1. Extract Displacement at Node 3 → returns [Ux, Uy, Uz, Rx, Ry, Rz]
-    disp = model.get_displacement(3)
+    disp = model.get_displacement(node_id=3, load_case=4)
     print(f"Node 3 - Ux: {disp[0]:.6f}, Uy: {disp[1]:.6f}")
     
     # 2. Extract Reaction Forces at Node 1 → returns [Fx, Fy, Fz, Mx, My, Mz]
-    react = model.get_reactions(node_id=1)
+    react = model.get_reactions(node_id=1, load_case=4)
     print(f"Support Node 1 - Fx: {react[0]:.2f}, Fy: {react[1]:.2f}")
     
     # 3. Extract Internal Forces for Element 2 at midspan
     #    Returns [N, Vy, Vz, Mt, My, Mz] (depends on element type)
-    forces = model.get_element_forces(2, rel_pos=0.5)
+    forces = model.get_element_forces(elem_id=2, rel_pos=0.5, load_case=4)
     print(f"Normal Force in Element 2: {forces[0]:.2f}")
-    
-    # 4. Extract results for a specific load case
-    disp_lc2 = model.get_displacement(3, load_case=2)
-    print(f"LC2 Node 3 - Uy: {disp_lc2[1]:.6f}")
 ```
 
+### Saving the Model
+
+```python
+# Save the model to a .toml file
+model.save("my_model.toml")
+```
+
+
 ## 6. Running the Script
+
+### From the console
+```bash
+python script_name.py
+```
 
 ### From the GUI
 1. Open FEAP and load any project (or start empty).
@@ -131,21 +155,3 @@ if model.solve():
 ### Hot-Reloading
 If you edit your `.py` script in an external editor and save, FEAP automatically detects the change and re-executes the script — providing a live-coding workflow.
 
-## Quick Reference
-
-| Method | Description |
-| :--- | :--- |
-| `model.set_config(...)` | System type, solver, description |
-| `model.add_node(id, x, y, z=0)` | Create a node |
-| `model.set_bc(id, ux, uy, ...)` | Set boundary conditions |
-| `model.add_linear_material(...)` | Add linear elastic material |
-| `model.add_truss(id, n1, n2, mat, area)` | Add truss element |
-| `model.add_beam(id, n1, n2, mat, sec)` | Add beam element |
-| `model.add_nodal_force(node, fx, fy, ...)` | Apply nodal force |
-| `model.add_distributed_load(elem, qx, qy)` | Apply distributed load |
-| `model.add_temperature_load(elem, dt)` | Apply temperature change |
-| `model.set_dead_load(gx, gy, gz=0)` | Set gravity vector |
-| `model.solve(load_case=None)` | Solve (all or single) |
-| `model.get_displacement(node, lc=None)` | Get nodal displacements |
-| `model.get_reactions(node, lc=None)` | Get support reactions |
-| `model.get_element_forces(elem, rel_pos)` | Get internal forces |

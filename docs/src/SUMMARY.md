@@ -8,6 +8,7 @@
 - [Getting Started](tutorials/getting_started.md)
 - [Python Tutorial](tutorials/python_tutorial.md)
 - [Elasto-Plastic Buckling](tutorials/elastoplastic_buckling.md)
+- [Non-Linear Material Modeling](tutorials/plastic_plate.md)
 - [Benchmarks](benchmarks/sbeam_buckling.md)
 - [Solver Performance](benchmarks/solver_comparison.md)
 - [IO Performance (TOML vs Binary)](benchmarks/io_bench.md)
@@ -18,8 +19,9 @@
 - [Potential Fields](theory/potential_fields.md)
 
 # Reference Manual
-- [Element Library](reference/elements.md)
 - [Solver Reference](reference/solver.md)
+- [Material Reference](reference/materials.md)
+- [Element Library](reference/elements.md)
 - [Loads Reference](reference/loads.md)
 - [Python Scripting API](scripting_api.md)
 
@@ -37,6 +39,8 @@
     - [Phase 8: The Interactive Editor](history/walkthrough_phase8.md) | [Task List](history/task_phase8.md)
     - [Phase 9: Python Integration](history/walkthrough_phase9.md) | [Task List](history/task_phase9.md)
     - [Phase 10: Advanced Physics](history/walkthrough_phase10.md) | [Task List](history/task_phase10.md)
+    - [Phase 11: Python API & Elasto-Plasticity](history/walkthrough_phase11.md) | [Task List](history/task_phase11.md)
+    - [Phase 12: Geotechnics & 2D Continua](history/walkthrough_phase12.md) | [Task List](history/task_phase12.md)
 
 # Appendix
 - [Bibliography](reference/bibliography.md)

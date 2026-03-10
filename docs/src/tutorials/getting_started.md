@@ -1,4 +1,4 @@
-# Getting Started with FEAP
+# Tutorial 1: Getting Started with FEAP
 
 This tutorial guides you through creating and analyzing your first finite element model using FEAP. We will build the **Linear Static Truss** example (`01_truss.toml`), which matches the reference output from the legacy FENDA software.
 
@@ -91,7 +91,7 @@ dead_load = [0.0, -9.81, 0.0]
 ```
 
 ### LC2: Nodal Loads
-Apply point forces. Here we apply -50kN and -100kN downward.
+Apply point forces. Here we apply -100kN downward at node 4.
 
 ```toml
 [[load_cases]]
